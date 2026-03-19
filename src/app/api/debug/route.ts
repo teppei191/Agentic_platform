@@ -1,28 +1,26 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@libsql/client/web";
 
 export async function GET() {
-  let url = process.env.TURSO_DATABASE_URL || "";
-  const token = process.env.TURSO_AUTH_TOKEN;
+  const rawUrl = process.env.TURSO_DATABASE_URL || "";
+  const token = process.env.TURSO_AUTH_TOKEN || "";
 
-  // Convert libsql:// to https:// for web client
-  if (url.startsWith("libsql://")) {
-    url = url.replace("libsql://", "https://");
-  }
-
-  const info: Record<string, string> = {
-    TURSO_DATABASE_URL_CONVERTED: url ? `${url.substring(0, 50)}...` : "NOT SET",
-    TURSO_AUTH_TOKEN: token ? "SET (length: " + token.length + ")" : "NOT SET",
+  const info: Record<string, unknown> = {
+    raw_url: rawUrl,
+    raw_url_length: rawUrl.length,
+    raw_url_chars: JSON.stringify([...rawUrl].map(c => c.charCodeAt(0)).slice(0, 20)),
+    token_length: token.length,
   };
 
+  // Test URL parsing
   try {
-    const client = createClient({ url, authToken: token });
-    const result = await client.execute("SELECT count(*) as cnt FROM User");
-    info.connection = "OK";
-    info.user_count = String(result.rows[0]?.cnt);
+    const httpsUrl = rawUrl.replace("libsql://", "https://");
+    info.https_url = httpsUrl;
+    const parsed = new URL(httpsUrl);
+    info.url_parse = "OK";
+    info.hostname = parsed.hostname;
   } catch (e: unknown) {
-    info.connection = "FAILED";
-    info.error = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+    info.url_parse = "FAILED";
+    info.url_error = e instanceof Error ? e.message : String(e);
   }
 
   return NextResponse.json(info);

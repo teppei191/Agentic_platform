@@ -9,6 +9,9 @@ function createPrismaClient() {
   const url = process.env.TURSO_DATABASE_URL;
   const authToken = process.env.TURSO_AUTH_TOKEN;
 
+  console.log("[prisma] TURSO_DATABASE_URL:", url ? `${url.substring(0, 30)}...` : "NOT SET");
+  console.log("[prisma] TURSO_AUTH_TOKEN:", authToken ? "SET" : "NOT SET");
+
   if (!url) {
     throw new Error("TURSO_DATABASE_URL is not set");
   }

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@libsql/client";
+import { createClient } from "@libsql/client/web";
 
 export async function GET() {
   const url = process.env.TURSO_DATABASE_URL;
@@ -11,26 +11,15 @@ export async function GET() {
     NODE_ENV: process.env.NODE_ENV || "unknown",
   };
 
-  // Test direct libsql connection
+  // Test direct libsql/web connection
   try {
     const client = createClient({ url: url!, authToken: token });
     const result = await client.execute("SELECT count(*) as cnt FROM User");
-    info.direct_libsql = "OK";
+    info.direct_libsql_web = "OK";
     info.user_count = String(result.rows[0]?.cnt);
   } catch (e: unknown) {
-    info.direct_libsql = "FAILED";
+    info.direct_libsql_web = "FAILED";
     info.direct_error = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
-  }
-
-  // Test prisma
-  try {
-    const { prisma } = await import("@/lib/prisma");
-    const count = await prisma.user.count();
-    info.prisma_connection = "OK";
-    info.prisma_user_count = String(count);
-  } catch (e: unknown) {
-    info.prisma_connection = "FAILED";
-    info.prisma_error = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
   }
 
   return NextResponse.json(info);

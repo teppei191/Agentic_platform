@@ -1,26 +1,83 @@
 @import "tailwindcss";
 
+/* Nissan-inspired Design Language */
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1a1a1a;
+  --nissan-red: #C3002F;
+  --nissan-red-hover: #A30028;
+  --nissan-black: #1a1a1a;
+  --nissan-dark: #2d2d2d;
+  --nissan-gray-900: #333333;
+  --nissan-gray-700: #555555;
+  --nissan-gray-500: #888888;
+  --nissan-gray-300: #cccccc;
+  --nissan-gray-200: #e5e5e5;
+  --nissan-gray-100: #f2f2f2;
+  --nissan-gray-50: #f8f8f8;
+  --nissan-white: #ffffff;
+  --nissan-accent: #C3002F;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-nissan-red: var(--nissan-red);
+  --color-nissan-red-hover: var(--nissan-red-hover);
+  --color-nissan-black: var(--nissan-black);
+  --color-nissan-dark: var(--nissan-dark);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--nissan-gray-300);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--nissan-gray-500);
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.15s ease-out;
 }

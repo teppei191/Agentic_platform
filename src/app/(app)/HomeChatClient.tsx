@@ -398,68 +398,67 @@ export default function HomeChatClient({ userName }: { userName: string }) {
 
       {/* ── Messages view ── */}
       {hasMessages && (
-        <>
-          <div className="flex-1 overflow-y-auto px-4 py-6">
-            <div className="max-w-3xl mx-auto space-y-6">
-              {messages.map((msg) => (
-                <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.role === "user" ? "bg-[#1a1a1a] text-white" : "bg-white border border-[#e5e5e5] text-[#1a1a1a]"}`}>
-                    <div className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
+        <div className="flex-1 flex flex-col overflow-y-auto px-4 py-6">
+          <div className="max-w-3xl mx-auto w-full space-y-6">
+            {messages.map((msg) => (
+              <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.role === "user" ? "bg-[#1a1a1a] text-white" : "bg-white border border-[#e5e5e5] text-[#1a1a1a]"}`}>
+                  <div className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
+                </div>
+              </div>
+            ))}
+            {loading && messages[messages.length - 1]?.role === "user" && (
+              <div className="flex justify-start">
+                <div className="bg-white border border-[#e5e5e5] rounded-2xl px-4 py-3">
+                  <div className="flex gap-1">
+                    <span className="w-2 h-2 bg-[#ccc] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="w-2 h-2 bg-[#ccc] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <span className="w-2 h-2 bg-[#ccc] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                   </div>
                 </div>
-              ))}
-              {loading && messages[messages.length - 1]?.role === "user" && (
-                <div className="flex justify-start">
-                  <div className="bg-white border border-[#e5e5e5] rounded-2xl px-4 py-3">
-                    <div className="flex gap-1">
-                      <span className="w-2 h-2 bg-[#ccc] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                      <span className="w-2 h-2 bg-[#ccc] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                      <span className="w-2 h-2 bg-[#ccc] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-                    </div>
-                  </div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
           </div>
 
-          {/* Input bar (messages mode) */}
-          <div className="border-t border-[#e5e5e5] bg-white px-4 py-4">
-            <div className="max-w-3xl mx-auto">
-              <div className="flex items-end gap-3 bg-[#f8f8f8] rounded-2xl px-4 py-3 border border-[#e5e5e5]">
-                <InputToolbar
-                  showFilePopup={showFilePopup} setShowFilePopup={setShowFilePopup}
-                  showToolsPopup={showToolsPopup} setShowToolsPopup={setShowToolsPopup}
-                  showConnectorPopup={showConnectorPopup} setShowConnectorPopup={setShowConnectorPopup}
-                  connectors={connectors} onToggleConnector={(k) => setConnectors((p) => ({ ...p, [k]: !p[k] }))}
-                />
-                <textarea
-                  ref={textareaRef}
-                  value={input}
-                  onChange={autoResize}
-                  onKeyDown={handleKeyDown}
-                  placeholder="メッセージを入力..."
-                  rows={1}
-                  className="flex-1 bg-transparent outline-none resize-none text-sm text-[#1a1a1a] placeholder-[#aaa] max-h-[200px]"
-                />
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <div className="relative">
-                    <button onClick={() => setShowModelPopup(!showModelPopup)} className="flex items-center gap-1 text-xs text-[#888] hover:text-[#555] transition">
-                      {modelLabel}
-                      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
-                    </button>
-                    {showModelPopup && (
-                      <ModelSelectPopup onClose={() => setShowModelPopup(false)} selectedModel={selectedModel} onSelect={setSelectedModel} />
-                    )}
-                  </div>
-                  <button onClick={() => sendMessage()} disabled={!input.trim() || loading} className="p-2 bg-[#1a1a1a] text-white rounded-full hover:bg-[#333] transition disabled:opacity-20 disabled:cursor-not-allowed">
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" /></svg>
+          {/* Spacer to push input toward center when few messages */}
+          <div className="flex-1 min-h-4" />
+
+          {/* Input bar inside scroll area */}
+          <div className="max-w-3xl mx-auto w-full pt-4">
+            <div className="flex items-center gap-3 bg-white rounded-2xl px-4 py-2.5 border border-[#e5e5e5] shadow-sm">
+              <InputToolbar
+                showFilePopup={showFilePopup} setShowFilePopup={setShowFilePopup}
+                showToolsPopup={showToolsPopup} setShowToolsPopup={setShowToolsPopup}
+                showConnectorPopup={showConnectorPopup} setShowConnectorPopup={setShowConnectorPopup}
+                connectors={connectors} onToggleConnector={(k) => setConnectors((p) => ({ ...p, [k]: !p[k] }))}
+              />
+              <textarea
+                ref={textareaRef}
+                value={input}
+                onChange={autoResize}
+                onKeyDown={handleKeyDown}
+                placeholder="メッセージを入力..."
+                rows={1}
+                className="flex-1 bg-transparent outline-none resize-none text-sm text-[#1a1a1a] placeholder-[#aaa] max-h-[200px]"
+              />
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="relative">
+                  <button onClick={() => setShowModelPopup(!showModelPopup)} className="flex items-center gap-1 text-xs text-[#888] hover:text-[#555] transition">
+                    {modelLabel}
+                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
                   </button>
+                  {showModelPopup && (
+                    <ModelSelectPopup onClose={() => setShowModelPopup(false)} selectedModel={selectedModel} onSelect={setSelectedModel} />
+                  )}
                 </div>
+                <button onClick={() => sendMessage()} disabled={!input.trim() || loading} className="p-2 bg-[#1a1a1a] text-white rounded-full hover:bg-[#333] transition disabled:opacity-20 disabled:cursor-not-allowed">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" /></svg>
+                </button>
               </div>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

@@ -17,12 +17,21 @@ function createPrismaClient() {
   return new PrismaClient({ adapter });
 }
 
-// Lazy initialization - only create client when first accessed
+function getPrismaClient() {
+  if (!globalForPrisma.prisma) {
+    globalForPrisma.prisma = createPrismaClient();
+  }
+  return globalForPrisma.prisma;
+}
+
+// Use getter to lazy-init at runtime, not build time
 export const prisma = new Proxy({} as InstanceType<typeof PrismaClient>, {
-  get(_target, prop) {
-    if (!globalForPrisma.prisma) {
-      globalForPrisma.prisma = createPrismaClient();
+  get(_target, prop: string | symbol) {
+    const client = getPrismaClient();
+    const value = (client as unknown as Record<string | symbol, unknown>)[prop];
+    if (typeof value === "function") {
+      return value.bind(client);
     }
-    return Reflect.get(globalForPrisma.prisma, prop);
+    return value;
   },
 });

@@ -127,6 +127,14 @@ export default function ChatClient({ agent, conversationId, initialMessages }: P
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Ensure textarea is cleared when input state becomes empty
+  useEffect(() => {
+    if (input === "" && textareaRef.current) {
+      textareaRef.current.value = "";
+      textareaRef.current.style.height = "auto";
+    }
+  }, [input]);
+
   const sendMessage = async () => {
     const trimmed = input.trim();
     if (!trimmed || loading) return;
@@ -138,15 +146,9 @@ export default function ChatClient({ agent, conversationId, initialMessages }: P
       createdAt: new Date().toISOString(),
     };
 
-    // Clear input immediately
+    setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setLoading(true);
-    setMessages((prev) => [...prev, userMessage]);
-
-    // Reset textarea height
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-    }
 
     try {
       const res = await fetch("/api/chat", {
@@ -234,8 +236,8 @@ export default function ChatClient({ agent, conversationId, initialMessages }: P
 
   return (
     <div className="flex flex-col h-screen bg-white">
-      {/* Messages area - scrollable */}
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+      {/* Messages area - scrollable, with input inside */}
+      <div className="flex-1 overflow-y-auto px-4 py-6 flex flex-col">
         <div className="max-w-3xl mx-auto">
           {/* Agent info header */}
           <div className="flex flex-col items-center mb-8 pt-4">
@@ -285,12 +287,13 @@ export default function ChatClient({ agent, conversationId, initialMessages }: P
             <div ref={messagesEndRef} />
           </div>
         </div>
+        <div className="flex-1" />
       </div>
 
-      {/* Input area - sticky at bottom */}
-      <div className="sticky bottom-0 shrink-0 border-t border-[#e5e5e5] bg-white px-4 py-3">
+      {/* Input area - fixed at bottom */}
+      <div className="shrink-0 border-t border-[#e5e5e5] bg-white px-4 py-3">
         <div className="max-w-3xl mx-auto">
-          <div className="flex items-end gap-3 bg-[#f8f8f8] rounded-2xl px-4 py-3 border border-[#e5e5e5]">
+          <div className="flex items-center gap-3 bg-[#f8f8f8] rounded-2xl px-4 py-2.5 border border-[#e5e5e5]">
             {/* + Button (File Upload) */}
             <div className="relative flex-shrink-0">
               <button

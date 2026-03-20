@@ -15,10 +15,3 @@ declare module "next-auth" {
     role?: string;
   }
 }
-
-declare module "@auth/core/jwt" {
-  interface JWT {
-    role?: string;
-    id?: string;
-  }
-}

@@ -141,7 +141,10 @@ export default function ChatClient({ agent, conversationId, initialMessages }: P
     setInput("");
     setLoading(true);
 
-    if (textareaRef.current) textareaRef.current.style.height = "auto";
+    if (textareaRef.current) {
+      textareaRef.current.value = "";
+      textareaRef.current.style.height = "auto";
+    }
 
     try {
       const res = await fetch("/api/chat", {
@@ -229,37 +232,25 @@ export default function ChatClient({ agent, conversationId, initialMessages }: P
 
   return (
     <div className="flex flex-col h-screen bg-white">
-      {/* Agent header - empty state */}
-      {messages.length === 0 && (
-        <div className="flex-1 flex flex-col items-center justify-center">
-          <div
-            className="h-14 w-14 rounded-full flex items-center justify-center text-white text-xl font-semibold mb-4"
-            style={{ backgroundColor: agent.iconColor }}
-          >
-            {agent.icon || agent.name[0]?.toUpperCase()}
-          </div>
-          <h2 className="text-xl font-semibold text-[#1a1a1a]">{agent.name}</h2>
-          {agent.description && (
-            <p className="text-sm text-[#888] mt-1.5 max-w-md text-center">{agent.description}</p>
-          )}
-        </div>
-      )}
-
-      {/* Messages */}
-      {messages.length > 0 && (
-        <div className="flex-1 overflow-y-auto px-4 py-6">
-          <div className="max-w-3xl mx-auto space-y-6">
-            {/* Agent info at top */}
-            <div className="flex flex-col items-center mb-8">
-              <div
-                className="h-10 w-10 rounded-full flex items-center justify-center text-white text-lg font-semibold mb-2"
-                style={{ backgroundColor: agent.iconColor }}
-              >
-                {agent.icon || agent.name[0]?.toUpperCase()}
-              </div>
-              <p className="text-sm font-medium text-[#1a1a1a]">{agent.name}</p>
+      {/* Messages area - scrollable */}
+      <div className="flex-1 overflow-y-auto px-4 py-6">
+        <div className="max-w-3xl mx-auto">
+          {/* Agent info header */}
+          <div className="flex flex-col items-center mb-8 pt-4">
+            <div
+              className="h-12 w-12 rounded-full flex items-center justify-center text-white text-lg font-semibold mb-3"
+              style={{ backgroundColor: agent.iconColor }}
+            >
+              {agent.icon || agent.name[0]?.toUpperCase()}
             </div>
+            <h2 className="text-lg font-semibold text-[#1a1a1a]">{agent.name}</h2>
+            {agent.description && messages.length === 0 && (
+              <p className="text-sm text-[#888] mt-1.5 max-w-md text-center">{agent.description}</p>
+            )}
+          </div>
 
+          {/* Messages */}
+          <div className="space-y-6">
             {messages.map((msg) => (
               <div
                 key={msg.id}
@@ -292,10 +283,10 @@ export default function ChatClient({ agent, conversationId, initialMessages }: P
             <div ref={messagesEndRef} />
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Input area */}
-      <div className="border-t border-[#e5e5e5] bg-white px-4 py-4">
+      {/* Input area - fixed at bottom */}
+      <div className="shrink-0 border-t border-[#e5e5e5] bg-white px-4 py-4">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-end gap-3 bg-[#f8f8f8] rounded-2xl px-4 py-3 border border-[#e5e5e5]">
             {/* + Button (File Upload) */}

@@ -343,15 +343,15 @@ export default function HomeChatClient({ userName }: { userName: string }) {
             </div>
 
             {/* Input card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-[#e5e5e5] p-4 mb-4">
+            <div className="bg-white rounded-2xl shadow-sm border border-[#e5e5e5] px-4 py-3 mb-4">
               <textarea
                 ref={textareaRef}
                 value={input}
                 onChange={autoResize}
                 onKeyDown={handleKeyDown}
                 placeholder="メッセージを入力..."
-                rows={3}
-                className="w-full bg-transparent outline-none resize-none text-sm text-[#1a1a1a] placeholder-[#aaa] mb-3"
+                rows={1}
+                className="w-full bg-transparent outline-none resize-none text-sm text-[#1a1a1a] placeholder-[#aaa] mb-2 max-h-[200px]"
               />
               <div className="flex items-center justify-between">
                 <InputToolbar

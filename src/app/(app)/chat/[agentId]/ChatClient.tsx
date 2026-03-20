@@ -128,21 +128,23 @@ export default function ChatClient({ agent, conversationId, initialMessages }: P
   }, [messages]);
 
   const sendMessage = async () => {
-    if (!input.trim() || loading) return;
+    const trimmed = input.trim();
+    if (!trimmed || loading) return;
 
     const userMessage: Message = {
       id: crypto.randomUUID(),
-      content: input.trim(),
+      content: trimmed,
       role: "user",
       createdAt: new Date().toISOString(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    // Clear input immediately
     setInput("");
     setLoading(true);
+    setMessages((prev) => [...prev, userMessage]);
 
+    // Reset textarea height
     if (textareaRef.current) {
-      textareaRef.current.value = "";
       textareaRef.current.style.height = "auto";
     }
 
@@ -285,8 +287,8 @@ export default function ChatClient({ agent, conversationId, initialMessages }: P
         </div>
       </div>
 
-      {/* Input area - fixed at bottom */}
-      <div className="shrink-0 border-t border-[#e5e5e5] bg-white px-4 py-4">
+      {/* Input area - sticky at bottom */}
+      <div className="sticky bottom-0 shrink-0 border-t border-[#e5e5e5] bg-white px-4 py-3">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-end gap-3 bg-[#f8f8f8] rounded-2xl px-4 py-3 border border-[#e5e5e5]">
             {/* + Button (File Upload) */}
